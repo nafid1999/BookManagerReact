@@ -1,9 +1,8 @@
 import React,{useState,useEffect} from 'react'
-import { ButtonGroup, Card,Table } from 'react-bootstrap'
+import { ButtonGroup, Card,Table,Button,Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
-import { Button } from 'bootstrap'
 const BookList = () => {
  
     const [books, setbooks] = useState([]);
@@ -39,7 +38,10 @@ const BookList = () => {
                                 ?
                                  books.map((book,id)=>
                                  <tr>
-                                     <td >{book.title}</td>
+                                     <td >
+                                         <Image src={book.coverPhotoURL} roundedCircle width="30" height="30"/>&nbsp;
+                                         {book.title}
+                                    </td>
                                      <td >{book.author}</td>
                                      <td >{book.isbnNumber}</td>
                                      <td >{book.price}</td>

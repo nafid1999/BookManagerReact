@@ -10,7 +10,7 @@ import BookList from './components/Book/BookList';
 import { Container } from 'react-bootstrap';
 import axios from "axios"
 
-axios.defaults.baseURL = "http://127.0.0.1:8001/"
+axios.defaults.baseURL = "http://localhost:8082/"
 axios.defaults.headers.post['Accept'] = "application/json"
 axios.defaults.headers.post['Content-Type'] = "application/json"
 function App() {
