@@ -1,8 +1,9 @@
 import React,{useState,useEffect} from 'react'
-import { Card,Table } from 'react-bootstrap'
+import { ButtonGroup, Card,Table } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import { Button } from 'bootstrap'
 const BookList = () => {
  
     const [books, setbooks] = useState([]);
@@ -32,9 +33,38 @@ const BookList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td align="center" colSpan="6">No Book Available.</td>
-                        </tr>
+                      
+                            {
+                                books.length>0
+                                ?
+                                 books.map((book,id)=>
+                                 <tr>
+                                     <td >{book.title}</td>
+                                     <td >{book.author}</td>
+                                     <td >{book.isbnNumber}</td>
+                                     <td >{book.price}</td>
+                                     <td >{book.language}</td>
+                                     <td>
+                                         <ButtonGroup>
+                                            <Button size="sm" variant="outline-primary">
+                                                <FontAwesomeIcon icon={faEdit}/>
+                                            </Button>
+                                            <Button size="sm" variant="outline-danger">
+                                                <FontAwesomeIcon icon={faTrash}/>
+                                            </Button>
+                                         </ButtonGroup>
+                                     </td>
+                                   
+                                 </tr>
+                                 
+                                 )
+                                :
+                                <tr>
+                                     <td align="center" colSpan="6">No Book Available.</td>
+                                </tr>
+                                
+                            }
+                       
                     </tbody>
                 </Table>
             </Card.Body>

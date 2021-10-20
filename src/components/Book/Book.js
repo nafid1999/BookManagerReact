@@ -4,15 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlusSquare,faSave,faUndo } from '@fortawesome/free-solid-svg-icons'
 
 const Book = () => {
+    const initialInputs={   title:"", author:"", price:"",photo:"",language:"",isbnNumber:""}
     //states
-    const [bookInputs, setbookInputs] = useState({
-        title:"",
-        author:"",
-        price:"",
-        photo:"",
-        language:"",
-        isbnNumber:""
-    })
+    const [bookInputs, setbookInputs] = useState(initialInputs)
 
     /**
      * events handler
@@ -24,6 +18,14 @@ const Book = () => {
 
     const handleSubmit=(e)=>{
         e.preventDefault()
+        const Book={...bookInputs}
+        axios.post("/books/create",Book)
+        .then(res=>{
+            if(res.status===201 && res.data!=null){
+                console.log("success")
+            }
+        })
+        .catch(err=>console.log("erooor"))
 
     }
     return (
