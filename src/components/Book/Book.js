@@ -1,7 +1,7 @@
 import React,{useState} from 'react'
 import { Card,Form,Button,Col,Row } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusSquare,faSave } from '@fortawesome/free-solid-svg-icons'
+import { faPlusSquare,faSave,faUndo } from '@fortawesome/free-solid-svg-icons'
 
 const Book = () => {
     //states
@@ -100,11 +100,17 @@ const Book = () => {
                     </Row>
                     
 
-                    <Card.Footer>
-                        <Button size="sm" variant="success" type="submit">
-                        <FontAwesomeIcon icon={faSave} />
-                        &nbsp;  Submit
+                    <Card.Footer style={{textAlign: "right"}}>
+                   
+                        <Button size="sm" variant="success" type="submit" className="">
+                            <FontAwesomeIcon icon={faSave} />
+                            &nbsp;  Submit
                         </Button>
+                        &nbsp;
+                        <Button size="sm" variant="secondary" type="reset" >
+                            <FontAwesomeIcon icon={faUndo} />
+                            &nbsp;  Reset
+                        </Button>                        
                     </Card.Footer>
 
                 </Form>

@@ -1,8 +1,18 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import { Card,Table } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList } from '@fortawesome/free-solid-svg-icons'
+import axios from 'axios'
 const BookList = () => {
+ 
+    const [books, setbooks] = useState([]);
+
+    useEffect(() => {
+        axios.get("/books/")
+        .then(res=>{setbooks([...res.data])})
+        .catch(err=>console.log("eroor"))
+    },[])
+
     return (
         <Card className="bg-dark text-white mt-5 border border-dark">
             <Card.Header>
@@ -23,7 +33,6 @@ const BookList = () => {
                     </thead>
                     <tbody>
                         <tr>
-                        
                             <td align="center" colSpan="6">No Book Available.</td>
                         </tr>
                     </tbody>
