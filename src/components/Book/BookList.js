@@ -3,9 +3,13 @@ import { ButtonGroup, Card,Table,Button,Image } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
+import MyToast from '../Toast'
+import { Link } from 'react-router-dom'
 const BookList = () => {
  
     const [books, setbooks] = useState([]);
+    const [show, setshow] = useState(false)
+
 
     useEffect(() => {
         axios.get("/books/")
@@ -13,7 +17,30 @@ const BookList = () => {
         .catch(err=>console.log("eroor"))
     },[])
 
+
+    /**
+     * events handler
+     */
+
+    const deleteBook=(id)=>{
+        let bookList=books.filter((book)=>book.id!==id)
+        if(window.confirm("Are you sure You wana delete this item")){
+             axios.delete("/books/delete/"+id)
+             .then(res=>{
+                 if(res.data!=null){
+                     setbooks([...bookList])
+                     setshow(true)
+                 }
+             }).catch(err=>console.log("Error"))
+        }
+
+    }
     return (
+
+        <>
+        <div style={{ "display": show ? "block" : "none" }} >
+            <MyToast message={"Book deleted Successfully."} />
+        </div>
         <Card className="bg-dark text-white mt-5 border border-dark">
             <Card.Header>
                 <FontAwesomeIcon icon={faList}/>&nbsp;
@@ -37,7 +64,7 @@ const BookList = () => {
                                 books.length>0
                                 ?
                                  books.map((book,id)=>
-                                 <tr>
+                                 <tr key={book.id} >
                                      <td >
                                          <Image src={book.coverPhotoURL} roundedCircle width="30" height="30"/>&nbsp;
                                          {book.title}
@@ -48,11 +75,11 @@ const BookList = () => {
                                      <td >{book.language}</td>
                                      <td>
                                          <ButtonGroup>
-                                            <Button size="sm" variant="outline-primary">
+                                            <Link to={`/edit-book/${book.id}`} className="btn btn-sm btn-outline-primary" >
                                                 <FontAwesomeIcon icon={faEdit}/>
-                                            </Button>
+                                            </Link>
                                             <Button size="sm" variant="outline-danger">
-                                                <FontAwesomeIcon icon={faTrash}/>
+                                                <FontAwesomeIcon icon={faTrash} onClick={()=>deleteBook(book.id)}/>
                                             </Button>
                                          </ButtonGroup>
                                      </td>
@@ -72,6 +99,7 @@ const BookList = () => {
             </Card.Body>
 
     </Card>
+    </>
     )
 }
 

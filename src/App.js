@@ -23,6 +23,7 @@ function App() {
                 <Switch>
                     <Route path="/"  exact component={Welcome} />
                     <Route path="/add-book" component={Book} />
+                    <Route path="/edit-book/:id" component={Book} />
                     <Route path="/book-list" component={BookList} />
                 </Switch>
               </Container>

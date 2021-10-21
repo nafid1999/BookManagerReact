@@ -1,16 +1,36 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Card, Form, Button, Col, Row } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlusSquare, faSave, faUndo } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faPlusSquare, faSave, faUndo } from '@fortawesome/free-solid-svg-icons'
 import MyToast from '../Toast'
 import axios from 'axios'
+import { useHistory, useParams } from 'react-router-dom'
 
 const Book = () => {
-    const initialInputs = { title: "", author: "", price: "", coverPhotoURL: "", language: "", isbnNumber: "" }
+    const initialInputs = { id:"",title: "", author: "", price: "", coverPhotoURL: "", language: "", isbnNumber: "" }
     //states
     const [bookInputs, setbookInputs] = useState(initialInputs)
     const [show, setshow] = useState(false)
+    const {id}=useParams()
+     
+    /**
+     * life cycle methods
+     */
 
+   
+      useEffect(() => {
+          if(id){
+                axios.get("/books/edit/"+id)
+                .then(res=>{
+                    if(res.data!=null && res.status===200){
+                        setbookInputs({...res.data})
+                    }
+                }).catch((err)=>{
+                    console.log("Not Found")
+                })
+          }
+         
+      }, [])
     /**
      * events handler
      */
@@ -29,7 +49,7 @@ const Book = () => {
             .then(res => {
                 if (res.status === 201 && res.data != null) {
                     setshow(true)
-                    setTimeout(() => setshow(false))
+                    setTimeout(() => setshow(false),3000)
                     console.log("success")
                 }
             })
@@ -38,19 +58,35 @@ const Book = () => {
         setbookInputs({ ...initialInputs })
 
     }
+
+    const handleUpdate=(e)=>{
+        e.preventDefault()
+        const Book = { ...bookInputs, genre: "History" }
+        axios.put("/books/update/"+id, Book)
+            .then(res => {
+                if (res.status === 200 && res.data != null) {
+                    setshow(true)
+                    setTimeout(() => setshow(false),3000)
+                    console.log("hill")
+                }
+            })
+            .catch(err => console.log("erooor"))
+    }
     return (
         <>
             <div style={{ "display": show ? "block" : "none" }}>
-                <MyToast message="Book Added successfully." />
+                <MyToast message={id?"Book Updated Successfully.":"Book Added successfully."} />
             </div>
             <Card className="bg-dark text-white mt-5 border border-dark">
                 <Card.Header>
-                    <FontAwesomeIcon icon={faPlusSquare} className={"ml-5"} />&nbsp;
-                    Add Book
-
+                    {
+                        id ? <><FontAwesomeIcon icon={faEdit} className={"ml-5"} />&nbsp; Edit Book Details</>
+                        :
+                        <> <FontAwesomeIcon icon={faPlusSquare} className={"ml-5"} />&nbsp; Add New Book </>   
+                    }   
                 </Card.Header>
                 <Card.Body>
-                    <Form onSubmit={handleSubmit} onReset={handleReset}>
+                    <Form onSubmit={id?handleUpdate:handleSubmit} onReset={handleReset}>
                         <Row>
                             <Form.Group className="mb-3" controlId="fjr" as={Col}>
                                 <Form.Label>Title</Form.Label>
@@ -119,7 +155,7 @@ const Book = () => {
 
                             <Button size="sm" variant="success" type="submit" className="">
                                 <FontAwesomeIcon icon={faSave} />
-                                &nbsp;  Submit
+                                &nbsp; {id?"Update":"Save"}
                             </Button>
                             &nbsp;
                             <Button size="sm" variant="secondary" type="reset" >
