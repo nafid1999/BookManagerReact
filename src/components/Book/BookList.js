@@ -1,19 +1,32 @@
 import React,{useState,useEffect} from 'react'
-import { ButtonGroup, Card,Table,Button,Image } from 'react-bootstrap'
+import { ButtonGroup, Card,Table,Button,Image, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faBackward, faEdit, faFastBackward, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import MyToast from '../Toast'
 import { Link } from 'react-router-dom'
 const BookList = () => {
- 
+   const booksPerPage=3
     const [books, setbooks] = useState([]);
     const [show, setshow] = useState(false)
+     const [page, setPage] = useState({
+         currentPage:1,
+         totalPages:1,
+         totalElements:0,
+
+     })
 
 
     useEffect(() => {
-        axios.get("/books/")
-        .then(res=>{setbooks([...res.data])})
+        axios.get(`/books?page=${currentPage-1}&size=${booksPerPage}`)
+        .then(res=>{
+            setbooks([...res.data.content])
+            setPage({
+                currentPage:res.data.number,
+                totalPages:res.data.totalPages,
+                totalElements:res.data.totalElements
+                })
+        })
         .catch(err=>console.log("eroor"))
     },[])
 
@@ -97,6 +110,38 @@ const BookList = () => {
                     </tbody>
                 </Table>
             </Card.Body>
+            <Card.Footer>
+                <div style={{float:"right"}}>
+                   Showing {currentPage} Of {totalPages}
+                </div>
+                <div style={{float:"left"}}>
+                    <InputGroup size="sm">
+                        <InputGroup.Prepend>
+                        <Button variant="outline-info" disabled={currentPage===1?true:false}>
+                            <FontAwesomeIcon icon={faFastBackward} />  First
+                        </Button>
+                        </InputGroup.Prepend>
+                        <InputGroup.Prepend>
+                            <Button variant="outline-info" disabled={currentPage===1?true:false}>
+                                <FontAwesomeIcon icon={faBackward} />  Prev
+                            </Button> 
+                        </InputGroup.Prepend>
+
+                         <FormControl/>
+
+                         <InputGroup.Append>
+                            <Button variant="outline-info" disabled={currentPage===1?true:false}>
+                                <FontAwesomeIcon icon={faFastBackward} />  First
+                            </Button>
+                        </InputGroup.Append>
+                        <InputGroup.Append>
+                            <Button variant="outline-info" disabled={currentPage===1?true:false}>
+                                <FontAwesomeIcon icon={faFastBackward} />  First
+                            </Button>
+                        </InputGroup.Append>
+                    </InputGroup>
+                </div>
+            </Card.Footer>
 
     </Card>
     </>
