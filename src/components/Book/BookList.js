@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from 'react'
 import { ButtonGroup, Card,Table,Button,Image, InputGroup, FormControl } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBackward, faEdit, faFastBackward, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faBackward, faEdit, faFastBackward, faFastForward, faForward, faList,faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import MyToast from '../Toast'
 import { Link } from 'react-router-dom'
@@ -131,12 +131,12 @@ const BookList = () => {
 
                          <InputGroup.Append>
                             <Button variant="outline-info" disabled={currentPage===1?true:false}>
-                                <FontAwesomeIcon icon={faFastBackward} />  First
+                                <FontAwesomeIcon icon={faForward} />  Next
                             </Button>
                         </InputGroup.Append>
                         <InputGroup.Append>
                             <Button variant="outline-info" disabled={currentPage===1?true:false}>
-                                <FontAwesomeIcon icon={faFastBackward} />  First
+                                <FontAwesomeIcon icon={faFastForward} />  Last
                             </Button>
                         </InputGroup.Append>
                     </InputGroup>
