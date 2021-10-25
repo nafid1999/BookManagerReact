@@ -7,9 +7,11 @@ import axios from 'axios'
 import { useHistory, useParams } from 'react-router-dom'
 
 const Book = () => {
-    const initialInputs = { id:"",title: "", author: "", price: "", coverPhotoURL: "", language: "", isbnNumber: "" }
+    const initialInputs = { id:"",title: "", author: "", price: "", coverPhotoURL: "", language: "", isbnNumber: "",genre:"" }
     //states
     const [bookInputs, setbookInputs] = useState(initialInputs)
+    const [genres, setgenres] = useState(["History","science"])
+    const [languages, setlanguages] = useState(["english","freansh"])
     const [show, setshow] = useState(false)
     const {id}=useParams()
      
@@ -19,6 +21,14 @@ const Book = () => {
 
    
       useEffect(() => {
+        axios.get("/books/languages")
+        .then(res=>{
+            setlanguages(res.data)
+        })
+        axios.get("/books/genres")
+        .then(res=>{
+            setgenres(res.data)
+        })
           if(id){
                 axios.get("/books/edit/"+id)
                 .then(res=>{
@@ -28,6 +38,7 @@ const Book = () => {
                 }).catch((err)=>{
                     console.log("Not Found")
                 })
+
           }
          
       }, [])
@@ -44,7 +55,7 @@ const Book = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        const Book = { ...bookInputs, genre: "History" }
+        const Book = { ...bookInputs}
         axios.post("/books/create", Book)
             .then(res => {
                 if (res.status === 201 && res.data != null) {
@@ -142,12 +153,29 @@ const Book = () => {
 
                             <Form.Group className="mb-3" controlId="fr" as={Col}>
                                 <Form.Label>Language</Form.Label>
-                                <Form.Control type="text" placeholder="Enter Language" className="bg-dark text-white "
-                                    name="language"
-                                    value={bookInputs.language}
-                                    onChange={handleChange}
-                                    required
-                                />
+                                <select className="form-control bg-dark text-white"  onChange={handleChange} name="language" >
+                                        <option className="bg-dark">Select Language</option>
+
+                                     {
+                                        languages.map((language,id)=>
+                                        <option key={id} value={language} className="bg-dark">{language}</option>
+                                        )
+                                     }   
+                                 </select>
+                            </Form.Group>
+
+                            <Form.Group className="mb-3" controlId="fr" as={Col}>
+                                <Form.Label>Genre</Form.Label>
+                                 <select className="form-control bg-dark text-white"  onChange={handleChange} name="genre" >
+                                        <option className="bg-dark">Select Genre</option>
+
+                                     {
+                                        genres.map((genre,id)=>
+                                        <option key={id} value={genre} className="bg-dark">{genre}</option>
+                                        )
+                                     }
+                                    
+                                 </select>
                             </Form.Group>
                         </Row>
 

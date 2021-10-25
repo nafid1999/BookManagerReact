@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ButtonGroup, Card, Table, Button, Image, InputGroup, FormControl } from 'react-bootstrap'
+import { ButtonGroup, Card, Table, Button, Image, InputGroup, FormControl, FormGroup } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBackward, faEdit, faFastBackward, faFastForward, faForward, faList, faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
@@ -14,18 +14,29 @@ var StyleInput={
 
 }
 const BookList = () => {
-    const booksPerPage = 2
+    const booksPerPage = 10
     const [books, setbooks] = useState([]);
     const [show, setshow] = useState(false)
+    const [toggleSort, settoggleSort] = useState(true)
     const [page, setPage] = useState({
         currentPage: 1,
         totalPages: 0,
         totalElements: 0,
+        sortBy:"id"
 
     })
-    
-    const findAllBooks=(currentPage)=>{
-        axios.get(`/books?page=${currentPage}&size=${booksPerPage}`)
+     const sortBy=(index)=>{
+         settoggleSort((prevState)=>{
+             console.log("uh"+!prevState)
+             return !prevState
+        })
+         console.log("ggg"+toggleSort)
+         setPage({...page,sortBy:index})
+         findAllBooks(page.currentPage-1,index,!toggleSort)
+     }
+    const findAllBooks=(currentPage,sortBy="id",sortToggle=toggleSort)=>{
+        let sortDir=sortToggle?"asc":"desc"
+        axios.get(`/books?pageNumber=${currentPage}&size=${booksPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`)
         .then(res => {
             setbooks([...res.data.content])
             
@@ -34,7 +45,7 @@ const BookList = () => {
     }
 
     useEffect(() => {
-        axios.get(`/books?page=${page.currentPage - 1}&size=${booksPerPage}`)
+        axios.get(`/books?pageNumber=${page.currentPage - 1}&size=${booksPerPage}&sortBy=${'id'}&sortDir=${"asc"}`)
         .then(res => {
             setbooks([...res.data.content])
             setPage({
@@ -44,7 +55,8 @@ const BookList = () => {
             })
         })
         .catch(err => console.log("eroor"))
-    }, [])
+       
+    },[])
 
 
     /**
@@ -53,7 +65,7 @@ const BookList = () => {
 
     const deleteBook = (id) => {
         let bookList = books.filter((book) => book.id !== id)
-        if (window.confirm("Are you sure You wana delete this item")) {
+        if (window.confirm("Are you sure You wanna delete this item")) {
             axios.delete("/books/delete/" + id)
                 .then(res => {
                     if (res.data != null) {
@@ -68,7 +80,7 @@ const BookList = () => {
         let condition=Math.ceil(page.totalElements/booksPerPage)
         if(page.currentPage<condition){
             setPage({...page,currentPage:condition})
-            findAllBooks(condition-1)
+            findAllBooks(condition-1,page.sortBy,toggleSort)
         }
     }
 
@@ -76,41 +88,57 @@ const BookList = () => {
         let condition=Math.ceil(page.totalElements/booksPerPage)
         if(page.currentPage<=condition){
             setPage({...page,currentPage:page.currentPage+1})
-            findAllBooks(page.currentPage)
+            findAllBooks(page.currentPage,page.sortBy,toggleSort)
         }
     }
     const First=()=>{
         setPage({...page,currentPage:1})
-        findAllBooks(0)
+        findAllBooks(0,page.sortBy,toggleSort)
     } 
     const prevPage=()=>{
         setPage({...page,currentPage:page.currentPage-1})
-        findAllBooks(page.currentPage-2)
+        findAllBooks(page.currentPage-2,page.sortBy,toggleSort)
     }
 
     const changePage=(e)=>{
         setPage({...page,[e.target.name]:parseInt( e.target.value)})
-        findAllBooks(parseInt(e.target.value-1))
+        findAllBooks(parseInt(e.target.value-1),page.sortBy,toggleSort)
     }
     return (
 
         <>
-            <div style={{ "display": show ? "block" : "none" }} >
+            <div  style={{ "display": show ? "block" : "none" }} >
                 <MyToast message={"Book deleted Successfully."} />
             </div>
             <Card className="bg-dark text-white mt-5 border border-dark">
                 <Card.Header>
-                    <FontAwesomeIcon icon={faList} />&nbsp;
-                    Book List
+                    <div  style={{float:"left"}}>
+                        <FontAwesomeIcon icon={faList} />&nbsp;
+                        Book List
+                    </div>
+                    <div className="float-end">
+                       <InputGroup>
+                          <InputGroup.Append>
+                             <Button>
+
+                             </Button>
+                             <Button>
+                                 
+                             </Button>
+                          
+                          </InputGroup.Append>
+                       </InputGroup>
+                    </div>
                 </Card.Header>
                 <Card.Body>
                     <Table striped bordered hover variant="dark">
                         <thead>
-                            <tr>
-                                <th>Title</th>
+                            <tr style={{cursor:"pointer"}}>
+                                <th onClick={()=>sortBy("title")}>Title</th>
                                 <th>Author</th>
-                                <th>ISBN Number</th>
-                                <th>Price</th>
+                                <th onClick={()=>sortBy("isbnNumber")}>ISBN Number</th>
+                                <th  onClick={()=>sortBy("price")}>Price</th>
+                                <th>Genre</th>
                                 <th>Langage</th>
                                 <th>Actions</th>
                             </tr>
@@ -128,7 +156,8 @@ const BookList = () => {
                                             </td>
                                             <td >{book.author}</td>
                                             <td >{book.isbnNumber}</td>
-                                            <td >{book.price}</td>
+                                            <td >{book.price} $</td>
+                                            <td >{book.genre}</td>
                                             <td >{book.language}</td>
                                             <td>
                                                 <ButtonGroup>
