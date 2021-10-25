@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { ButtonGroup, Card, Table, Button, Image, InputGroup, FormControl, FormGroup } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBackward, faEdit, faFastBackward, faFastForward, faForward, faList, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faBackward, faEdit, faFastBackward, faFastForward, faForward, faList, faSearch, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 import MyToast from '../Toast'
+
 import { Link } from 'react-router-dom'
 var StyleInput={
     width:"45px",
@@ -18,6 +19,7 @@ const BookList = () => {
     const [books, setbooks] = useState([]);
     const [show, setshow] = useState(false)
     const [toggleSort, settoggleSort] = useState(true)
+    const [search, setsearch] = useState("")
     const [page, setPage] = useState({
         currentPage: 1,
         totalPages: 0,
@@ -118,14 +120,20 @@ const BookList = () => {
                     </div>
                     <div className="float-end">
                        <InputGroup>
-                          <InputGroup.Append>
-                             <Button>
-
-                             </Button>
-                             <Button>
-                                 
-                             </Button>
+                         <FormControl size="sm"
+                          placeholder="search" 
+                          value={search} name="search" 
+                          className="bg-dark text-white info-border"
+                          onChange={(e)=>setsearch(e.target.value)}
                           
+                          />&nbsp;
+                          <InputGroup.Append>
+                             <Button size="sm" variant="outline-info">
+                                 <FontAwesomeIcon icon={faSearch} />
+                             </Button>
+                             <Button size="sm" variant="outline-danger" onClick={()=>setsearch('')} >
+                                  <FontAwesomeIcon icon={faTimes} />
+                             </Button>
                           </InputGroup.Append>
                        </InputGroup>
                     </div>

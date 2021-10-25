@@ -6,6 +6,7 @@ import MyToast from '../Toast'
 import axios from 'axios'
 import { useHistory, useParams } from 'react-router-dom'
 
+
 const Book = () => {
     const initialInputs = { id:"",title: "", author: "", price: "", coverPhotoURL: "", language: "", isbnNumber: "",genre:"" }
     //states
