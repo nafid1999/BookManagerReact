@@ -35,6 +35,7 @@ const Book = () => {
                 .then(res=>{
                     if(res.data!=null && res.status===200){
                         setbookInputs({...res.data})
+
                     }
                 }).catch((err)=>{
                     console.log("Not Found")
@@ -78,11 +79,12 @@ const Book = () => {
             .then(res => {
                 if (res.status === 200 && res.data != null) {
                     setshow(true)
-                    setTimeout(() => setshow(false),3000)
                     console.log("hill")
                 }
             })
             .catch(err => console.log("erooor"))
+            setTimeout(() => setshow(false),3000)
+
     }
     return (
         <>
@@ -154,7 +156,7 @@ const Book = () => {
 
                             <Form.Group className="mb-3" controlId="fr" as={Col}>
                                 <Form.Label>Language</Form.Label>
-                                <select className="form-control bg-dark text-white"  onChange={handleChange} name="language" >
+                                <select value={bookInputs.language} className="form-control bg-dark text-white"  onChange={handleChange} name="language" >
                                         <option className="bg-dark">Select Language</option>
 
                                      {
@@ -167,7 +169,7 @@ const Book = () => {
 
                             <Form.Group className="mb-3" controlId="fr" as={Col}>
                                 <Form.Label>Genre</Form.Label>
-                                 <select className="form-control bg-dark text-white"  onChange={handleChange} name="genre" >
+                                 <select value={bookInputs.genre} className="form-control bg-dark text-white"  onChange={handleChange} name="genre" >
                                         <option className="bg-dark">Select Genre</option>
 
                                      {

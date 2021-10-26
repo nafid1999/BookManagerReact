@@ -15,7 +15,7 @@ var StyleInput={
 
 }
 const BookList = () => {
-    const booksPerPage = 10
+    const booksPerPage = 2
     const [books, setbooks] = useState([]);
     const [show, setshow] = useState(false)
     const [toggleSort, settoggleSort] = useState(true)
@@ -27,25 +27,7 @@ const BookList = () => {
         sortBy:"id"
 
     })
-     const sortBy=(index)=>{
-         settoggleSort((prevState)=>{
-             console.log("uh"+!prevState)
-             return !prevState
-        })
-         console.log("ggg"+toggleSort)
-         setPage({...page,sortBy:index})
-         findAllBooks(page.currentPage-1,index,!toggleSort)
-     }
-    const findAllBooks=(currentPage,sortBy="id",sortToggle=toggleSort)=>{
-        let sortDir=sortToggle?"asc":"desc"
-        axios.get(`/books?pageNumber=${currentPage}&size=${booksPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`)
-        .then(res => {
-            setbooks([...res.data.content])
-            
-        })
-        .catch(err => console.log("eroor"))
-    }
-
+     
     useEffect(() => {
         axios.get(`/books?pageNumber=${page.currentPage - 1}&size=${booksPerPage}&sortBy=${'id'}&sortDir=${"asc"}`)
         .then(res => {
@@ -78,10 +60,36 @@ const BookList = () => {
         }
 
     }
+    
+   const findAllBooks=(currentPage,sortBy="id",sortToggle=toggleSort)=>{
+       let sortDir=sortToggle?"asc":"desc"
+       axios.get(`/books?pageNumber=${currentPage}&size=${booksPerPage}&sortBy=${sortBy}&sortDir=${sortDir}`)
+       .then(res => {
+           setbooks([...res.data.content])
+           setPage({
+               currentPage: res.data.number+1,
+               totalPages: res.data.totalPages,
+               totalElements: res.data.totalElements
+           })
+           
+       })
+       .catch(err => console.log("eroor"))
+   }
+
+   const sortBy=(index)=>{
+    settoggleSort((prevState)=>{
+        return !prevState
+   })
+    setPage({...page,sortBy:index})
+    findAllBooks(page.currentPage-1,index,!toggleSort)
+}
     const lastPage=()=>{
         let condition=Math.ceil(page.totalElements/booksPerPage)
         if(page.currentPage<condition){
             setPage({...page,currentPage:condition})
+            if(search)
+               searchBook(condition-1)
+            else
             findAllBooks(condition-1,page.sortBy,toggleSort)
         }
     }
@@ -90,21 +98,61 @@ const BookList = () => {
         let condition=Math.ceil(page.totalElements/booksPerPage)
         if(page.currentPage<=condition){
             setPage({...page,currentPage:page.currentPage+1})
-            findAllBooks(page.currentPage,page.sortBy,toggleSort)
+            if(search)
+                searchBook(page.currentPage)
+            else
+                findAllBooks(page.currentPage,page.sortBy,toggleSort)
         }
     }
+
     const First=()=>{
         setPage({...page,currentPage:1})
-        findAllBooks(0,page.sortBy,toggleSort)
+        if(search)
+          searchBook(0)
+        else
+          findAllBooks(0,page.sortBy,toggleSort)
     } 
+
     const prevPage=()=>{
         setPage({...page,currentPage:page.currentPage-1})
-        findAllBooks(page.currentPage-2,page.sortBy,toggleSort)
+        if(search)
+           searchBook(page.currentPage-2)
+        else
+           findAllBooks(page.currentPage-2,page.sortBy,toggleSort)
     }
 
     const changePage=(e)=>{
         setPage({...page,[e.target.name]:parseInt( e.target.value)})
-        findAllBooks(parseInt(e.target.value-1),page.sortBy,toggleSort)
+        if(search){
+            searchBook(parseInt(e.target.value-1))
+        }else{
+            findAllBooks(parseInt(e.target.value-1),page.sortBy,toggleSort)
+
+        }
+    }
+
+    const searchBook=(currentPage)=>{
+        if(search)
+            axios.get("/books/search/"+search+`?page=${currentPage}&size=${booksPerPage}`)
+            .then(res => {
+                if (res.data != null) {
+                    setbooks([...res.data.content])
+                    setPage({
+                        currentPage: res.data.number+1,
+                        totalPages: res.data.totalPages,
+                        totalElements: res.data.totalElements
+                    })
+                }
+            }).catch(err => console.log("Error"))
+
+    }
+
+    const resetSearch=()=>{
+        if(search){
+            setsearch('')
+            findAllBooks(page.currentPage-1)
+        }
+       
     }
     return (
 
@@ -128,10 +176,10 @@ const BookList = () => {
                           
                           />&nbsp;
                           <InputGroup.Append>
-                             <Button size="sm" variant="outline-info">
+                             <Button size="sm" variant="outline-info" onClick={()=>searchBook(page.currentPage-1)}>
                                  <FontAwesomeIcon icon={faSearch} />
                              </Button>
-                             <Button size="sm" variant="outline-danger" onClick={()=>setsearch('')} >
+                             <Button size="sm" variant="outline-danger" onClick={()=>{resetSearch() }} >
                                   <FontAwesomeIcon icon={faTimes} />
                              </Button>
                           </InputGroup.Append>
