@@ -15,7 +15,7 @@ var StyleInput={
 
 }
 const BookList = () => {
-    const booksPerPage = 2
+    const booksPerPage = 4
     const [books, setbooks] = useState([]);
     const [show, setshow] = useState(false)
     const [toggleSort, settoggleSort] = useState(true)

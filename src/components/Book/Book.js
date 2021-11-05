@@ -5,45 +5,56 @@ import { faEdit, faPlusSquare, faSave, faUndo } from '@fortawesome/free-solid-sv
 import MyToast from '../Toast'
 import axios from 'axios'
 import { useHistory, useParams } from 'react-router-dom'
+import { connect } from 'react-redux'
+import  {createBook, fetchBook, updateBook} from "../../services/Book/actions"
 
 
-const Book = () => {
+const Book = ({saveBook,savedBook,fetchingBook,fetchedBook,updateBook,updatedBook}) => {
     const initialInputs = { id:"",title: "", author: "", price: "", coverPhotoURL: "", language: "", isbnNumber: "",genre:"" }
     //states
-    const [bookInputs, setbookInputs] = useState(initialInputs)
+    const [bookInputs, setbookInputs] = useState(fetchedBook)
     const [genres, setgenres] = useState(["History","science"])
     const [languages, setlanguages] = useState(["english","freansh"])
     const [show, setshow] = useState(false)
     const {id}=useParams()
-     
+    
+
     /**
      * life cycle methods
      */
-
-   
       useEffect(() => {
-        axios.get("/books/languages")
-        .then(res=>{
-            setlanguages(res.data)
-        })
-        axios.get("/books/genres")
-        .then(res=>{
-            setgenres(res.data)
-        })
-          if(id){
-                axios.get("/books/edit/"+id)
-                .then(res=>{
-                    if(res.data!=null && res.status===200){
-                        setbookInputs({...res.data})
+            axios.get("/books/languages")
+            .then(res=>{
+                setlanguages(res.data)
+            })
+            axios.get("/books/genres")
+            .then(res=>{
+                setgenres(res.data)
+            })
+            console.log(bookInputs)
+            if(id){
+               findBookById(id)
+            }
+      },[])
 
-                    }
-                }).catch((err)=>{
-                    console.log("Not Found")
-                })
+      useEffect(() => {
+          console.log("fetched book")
+          setbookInputs({...fetchedBook})
+          console.log(fetchedBook)
+      
+     },[fetchedBook])
+      
+      const findBookById=(id)=>{
+        fetchingBook(id)
+                let book=fetchedBook
+                if(book!=null){
+                    setbookInputs({...fetchedBook})
+                    console.log("actual state")
+                    console.log(bookInputs)  
+                }
+      }
 
-          }
-         
-      }, [])
+
     /**
      * events handler
      */
@@ -58,31 +69,31 @@ const Book = () => {
     const handleSubmit = (e) => {
         e.preventDefault()
         const Book = { ...bookInputs}
-        axios.post("/books/create", Book)
-            .then(res => {
-                if (res.status === 201 && res.data != null) {
-                    setshow(true)
-                    setTimeout(() => setshow(false),3000)
-                    console.log("success")
-                }
-            })
-            .catch(err => console.log("erooor"))
-
+        saveBook(Book)
+        if(savedBook!=null){
+            setshow(true)
+            setTimeout(() => setshow(false),3000)
+        }else{
+            console.log("erooor")
+        }
         setbookInputs({ ...initialInputs })
-
     }
 
     const handleUpdate=(e)=>{
         e.preventDefault()
-        const Book = { ...bookInputs, genre: "History" }
-        axios.put("/books/update/"+id, Book)
-            .then(res => {
-                if (res.status === 200 && res.data != null) {
-                    setshow(true)
-                    console.log("hill")
-                }
-            })
-            .catch(err => console.log("erooor"))
+        const Book = { ...bookInputs }
+        // axios.put("/books/update/"+id, Book)
+        //     .then(res => {
+        //         if (res.status === 200 && res.data != null) {
+        //             setshow(true)
+        //             console.log("hill")
+        //         }
+        //     })
+        //     .catch(err => console.log("erooor"))
+         updateBook(id,Book)
+         if(updateBook!=null){
+             setshow(true)
+         }
             setTimeout(() => setshow(false),3000)
 
     }
@@ -97,7 +108,10 @@ const Book = () => {
                         id ? <><FontAwesomeIcon icon={faEdit} className={"ml-5"} />&nbsp; Edit Book Details</>
                         :
                         <> <FontAwesomeIcon icon={faPlusSquare} className={"ml-5"} />&nbsp; Add New Book </>   
-                    }   
+                    }  
+                    {
+                        fetchedBook.title
+                    } 
                 </Card.Header>
                 <Card.Body>
                     <Form onSubmit={id?handleUpdate:handleSubmit} onReset={handleReset}>
@@ -202,5 +216,23 @@ const Book = () => {
         </>
     )
 }
+const mapStateToProps=(state)=>{
+    console.log("map props")
+    console.log(state.book)
+      return{
+          savedBook:state.book,
+          updatedBook:state.book,
+          fetchedBook:state.book
+      }
+}
 
-export default Book
+const mapDispatchToProps=(dispatch)=>{
+    return {
+       saveBook: book=> dispatch(createBook(book)),
+       updateBook:(Id,book)=>dispatch(updateBook(Id,book)),
+       fetchingBook:(bookId)=>dispatch(fetchBook(bookId))
+
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Book) 
