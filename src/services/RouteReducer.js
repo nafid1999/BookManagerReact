@@ -1,7 +1,9 @@
-
 import { combineReducers } from "redux";
-import  {bookReducer}  from "./Book/BookReducer";
+import  {authReducer}  from "./User/auth/AuthReducer";
+import  {userReducer}  from "./User/user/UserReducer";
+
 
 export default combineReducers({
-    savedBook:bookReducer   
+    auth:authReducer,
+    user:userReducer
 })
