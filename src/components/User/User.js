@@ -43,14 +43,18 @@ const User = () => {
      * for Redux Store
      */
     //const success=useSelector((state)=>state.user.success)
+
     const dispatch=useDispatch();
-     const [success, setsuccess] = useState(false)
+    const [success, setsuccess] = useState(false)
     const { id } = useParams();
+
     /**
      * use Form validation
      */
+
     const { register, handleSubmit,formState:{ errors }, setValue } = useForm();
     const onErrors = errors => console.error(errors);
+
     /**
      * side effect events
      */
@@ -58,10 +62,11 @@ const User = () => {
     useEffect(() => {
         console.log(id)
         if(id!==undefined){
-            dispatch(fetchUser(id)).then(({data})=>{
-            setValue("firstName",data.firstName )
-            setValue("lastName",data.lastName )
-           })     
+            dispatch(fetchUser(id))
+            .then(({data})=>{
+                setValue("firstName",data.firstName )
+                setValue("lastName",data.lastName )
+            })     
         }
     }, [id])
     
@@ -100,8 +105,8 @@ const User = () => {
                 <Card.Header>
                     {
                         id ? <><FontAwesomeIcon icon={faEdit} className={"ml-5"} />&nbsp; Edit User Details</>
-                            :
-                            <> <FontAwesomeIcon icon={faPlusSquare} className={"ml-5"} />&nbsp; Add New User </>
+                           :
+                             <> <FontAwesomeIcon icon={faPlusSquare} className={"ml-5"} />&nbsp; Add New User </>
                     }
                 </Card.Header>
                 <Card.Body>

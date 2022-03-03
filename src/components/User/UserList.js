@@ -17,19 +17,6 @@ const RequestError = () => (
 let coverPhotoURL = "https://images-na.ssl-images-amazon.com/images/I/417zLTa1uqL._SX397_BO1,204,203,200_.jpg"
 const UserList = () => {
 
-   // const [listUsers, setUsers] = useState([]);
-    // const listUsers=useSelector((state)=>state.user.listUsers)
-     //const success=useSelector((state)=>state)
-    
-
-    //const { data, error, loading, pristine }  = useQuery({ type: FETCH_USERS })
-    
-    // const   state=useSelector((state)=>state)
-    //  const query = getQuery(success, {
-    //     type: FETCH_USERS,
-    //   });
-      //const newstate=useSelector(getQuerySelector({ type: 'FETCH_BOOKS' }))
-
       /**
        * states
        */
@@ -45,7 +32,7 @@ const UserList = () => {
             [usersQuery.data],
         );
 
-      /**
+      /*
        * side effects
        */
         useEffect(() => {
@@ -60,7 +47,7 @@ const UserList = () => {
         // let updatedList = listUsers.filter((user, index) => user.id !== idUser)
         setloading(true)
         if (window.confirm("Are you sure You wanna delete this item")) 
-           dispatch(deleteUser(idUser)).then(({ status})=>{
+           dispatch(deleteUser(idUser)).then(({status})=>{
             if(status<300 && status>=200){
                 setTimeout(()=>{
                     setloading(false)
@@ -116,9 +103,7 @@ const UserList = () => {
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-          
-                                  
+                        <tbody>  
                                 { users.length >0 ?
                                 
                                     users.map(user=><tr key={user.id} >
@@ -161,9 +146,6 @@ const UserList = () => {
                         </tbody>
                     </Table>
                     }
-                    
-                 
-                    
                 </Card.Body>
                 <Card.Footer>
 {/*                     
