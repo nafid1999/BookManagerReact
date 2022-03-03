@@ -12,6 +12,7 @@ import {Provider} from "react-redux"
 import {store} from "./services/store"
 import UserList from './components/User/UserList';
 import User from './components/User/User';
+import Test from './components/User/Test';
 
 
 axios.defaults.baseURL = "http://localhost:8081/"
@@ -28,11 +29,12 @@ function App() {
               <Container>
                   <Switch>
                       <Route path="/"  exact component={Welcome} />
-                      <Route path="/add-user" component={User} />
-                      <Route path="/edit-user/:id" component={User} />
+                      <Route path="/test" component={Test} />
+                      <Route path="/add-user" component={User} /> 
+                      <Route path="/edit-user/:id" component={User} /> 
                       <Route path="/user-list" component={UserList} />
-                      <Route path="/login" component={Login} />
                       <Route path="/register" component={Register} />
+                      <Route path="/login" component={Login} />
                   </Switch>
                 </Container>
             </Router>

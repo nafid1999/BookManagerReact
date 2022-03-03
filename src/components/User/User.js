@@ -7,7 +7,7 @@ import { faEdit, faPlusSquare, faSave, faUndo } from '@fortawesome/free-solid-sv
 import MyToast from '../Toast'
 import { useForm } from "react-hook-form";
 import {  useSelector,useDispatch } from 'react-redux'
-import { createUser,updateUser } from '../../services/User/user/actions'
+import { createUser,fetchUser,updateUser } from '../../services/User/user/actions'
 
 const registerOptions = {
   
@@ -42,16 +42,15 @@ const User = () => {
     /**
      * for Redux Store
      */
-    const success=useSelector((state)=>state.user.success)
+    //const success=useSelector((state)=>state.user.success)
     const dispatch=useDispatch();
-
+     const [success, setsuccess] = useState(false)
     const { id } = useParams();
     /**
      * use Form validation
      */
     const { register, handleSubmit,formState:{ errors }, setValue } = useForm();
     const onErrors = errors => console.error(errors);
-    
     /**
      * side effect events
      */
@@ -59,11 +58,10 @@ const User = () => {
     useEffect(() => {
         console.log(id)
         if(id!==undefined){
-            axios.get("/person/"+id)
-                 .then(({data})=>{
-                   setValue("firstName",data.firstName )
-                   setValue("lastName",data.lastName )
-                 })
+            dispatch(fetchUser(id)).then(({data})=>{
+            setValue("firstName",data.firstName )
+            setValue("lastName",data.lastName )
+           })     
         }
     }, [id])
     
@@ -75,9 +73,21 @@ const User = () => {
     const handlehSubmit = (data) => {
         console.log("toto", data);
          if(id!==undefined){
-           dispatch(updateUser({...data,id},id))
+          // dispatch(updateUser({...data,id},id))
+          dispatch(updateUser(id,{...data,id})).then(({ status})=>{
+            if(status<300 && status>=200){
+                setsuccess(true)
+                setTimeout(()=>setsuccess(false),3000)
+            }
+        })
          }else
            dispatch(createUser(data))
+           .then(({ status})=>{
+               if(status<300 && status>=200){
+                   setsuccess(true)
+                   setTimeout(()=>setsuccess(false),3000)
+               }
+           })
 
     }
 
@@ -97,7 +107,7 @@ const User = () => {
                 <Card.Body>
                      {false && <Alert variant="danger">Fields are not valid</Alert>}
 
-                    <Form onSubmit={handleSubmit(handlehSubmit,onErrors)} className="needs-validation" novalidate >
+                    <Form onSubmit={handleSubmit(handlehSubmit,onErrors)} className="needs-validation"  >
                         <Row>
                             <Form.Group className="mb-3" controlId="fjr" as={Col}>
                                 <Form.Label>First Name</Form.Label>

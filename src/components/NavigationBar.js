@@ -8,9 +8,9 @@ const NavigationBar = () => {
   return (
     <Navbar bg="dark" variant="dark">
       <Link to="/" className="navbar-brand">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Book_icon_1.png"
-          width="40"
-          height="35"
+        <img src="https://cdn.pixabay.com/photo/2015/03/04/22/35/head-659651_960_720.png"
+          width="60"
+          height="40"
           alt="brand" />
       </Link>
 
